@@ -6,23 +6,34 @@ var inputBox = (function () {
      Version: 0.4
      ********************************
      Usage:
-     you can provide your data directly while creating the object
-     inp = new inputBox([{city:'CityName1',selected:false},{city:'CityName2',selected:false}])
-     or you may provide a url for an AJAX request
-     inp = new inputBox('/somewhere/somehow');
-     the AJAX call must return an OBJECT as a response.
+     create an object with the configuration as followed
+     
+     config = {
+     data: [],           // The data goes here
+     width: 4464,        // width
+     itemsPerPage: 6,    // Items to show in the list 
+     sortByName: true,   // sort alphabetically or not
+     style: 'night',     // you can provide a theme, the themes are set in the css file and set the classes according night  
+     url: 'URL'          // The URL for the AJAX request
+     };
+     
+     If a URL is provided and also a data is set at the data part, the AJAX response overwrites the old data 
      */
 
     function InputBox(config) {
-        this.config = {};
+        this.config = m.prop({});
         this.config.data = m.prop([]);
         this.config.width = m.prop(100);
         this.config.itemsPerPage = m.prop(10);
         this.config.sortByName = m.prop(false);
         this.config.style = m.prop('none');
-        this.current = m.prop('');
+        this.config.url = m.prop('');
+        // the var for userInput value in the input box
+        this.userInput = m.prop('');
+        // the var for list shown in the view part
         this.list = m.prop([]);
-        //this.data = m.prop([{}]);
+        // if set to true data in the config exists
+        //
         this.completed = m.prop(false);
         this.inputCssClass = m.prop('');
         this.init(config);
@@ -34,86 +45,83 @@ var inputBox = (function () {
     InputBox.prototype.init = function (param) {
 
         for (var key in param) {
-            //   console.log('key::',key,'*** this.config[key]::',this.config[key](),'*** param[key]::',param[key]);
             this.config[key](param[key])
         }
-        if (typeof(this.config['data'])=='string'){
+        if (this.config.url() != '') {
             this.getData()
-        }else{
+        } else {
             this.completed(true)
         }
-       // console.warn(this.config)
 
         this.updateList()
     };
     InputBox.prototype.stylize = function () {
-        // console.log('config', this.config);
-        switch (this.config["style"]) {
+
+        switch (this.config["style"]()) {
             case "night":
-                console.info('Night Theme Selected');
                 this.inputCssClass(".inputBoxNight");
                 break;
 
         }
 
     };
+
     InputBox.prototype.updateList = function () {
         this.list([]);
 
-        if (this.config.data()) {
-            for (var i = 0; i < this.config.data().length; i++) {
-          //      console.info(this.config.data())
-                var lowerData = this.config.data()[i].name.toLowerCase();
-                var lowerCurrent = this.current().toLowerCase();
-                   console.log('****', this.config.data()[i].name, i, lowerData, lowerCurrent);
-                var c = lowerData.indexOf(lowerCurrent);
-                console.log("Compare : current", this.current(), "city", this.config.data()[i].name, "returned:", c,"items Per Page::",this.config.itemsPerPage());
-                if (c != -1 && this.list().length<=this.config.itemsPerPage()) {
-                    this.list().push(this.config.data()[i].name);
-                        console.log('C!=1 and so at [i]teration: ', i, ' data[' + i + '].city:', this.config.data()[i].name, 'Length of List', this.list().length);
+        var theList = this.list(),
+            theData = this.config.data();
 
-                }
-                //   console.log(this.config);
-                if (this.config['sortByName'] == true) {
-                    this.list().sort();
+        if (theData.length) {
+
+            for (var i = 0; i < theData.length; i++) {
+
+                var dataElement = theData[i],
+                    lowerCaseName = dataElement.name.toLowerCase(),
+                    lowerInputBoxValue = this.userInput().toLowerCase(),
+                    nameIdx = lowerCaseName.indexOf(lowerInputBoxValue);
+
+                if (nameIdx != -1 && theList.length < this.config.itemsPerPage()) {
+                    theList.push(theData[i].name);
                 }
 
             }
-              console.log('The List is:', this.list());
-            m.redraw()
+            if (this.config.sortByName()) {
+                theList.sort();
+            }
         }
     };
-    //GET DATA Later Will be AJAX
-    InputBox.prototype.getData = function (url) {
-       // console.log("--------------------URL has been set--------------------", url);
-        var _this = this;
 
-        var greetAsync = function () {
-            var deferred = m.deferred();
-            setTimeout(function () {
-                deferred.resolve([{city: 'Tabriz', selected: false}, {city: 'Istanbul', selected: false}]);
-            }, 1000);
-            return deferred.promise;
-        };
+    //GET DATA Later Will be AJAX
+    InputBox.prototype.getData = function () {
+        var IB = this,
+            greetAsync = function () {
+                var deferred = m.deferred();
+                setTimeout(function () {
+                    deferred.resolve([
+                        {name: 'Tabriz', selected: false},
+                        {name: 'Istanbul', selected: false}
+                    ]);
+                }, 1000);
+                return deferred.promise;
+            };
 
         greetAsync()
             .then(function (response) {
-                _this.config.data(response);
-                _this.completed(true);
-             //   console.log('AJAX Response::', response, 'completed::', _this.completed());
-                m.redraw();
-                _this.updateList();
-                return _this
-
+                m.startComputation();
+                IB.config.data(response);
+                IB.completed(true);
+                IB.updateList();
+                m.endComputation();
             })
     };
-    InputBox.prototype.view = function () {
 
+    InputBox.prototype.view = function () {
         return [m('input' + this.inputCssClass(), {
-                oninput: m.withAttr('value', this.current),
+                oninput: m.withAttr('value', this.userInput),
                 onchange: this.completed() ? this.updateList() : ""
             },
-            this.current()),
+            this.userInput()),
             m('ul',
                 this.list().map(
                     function (e) {
@@ -126,92 +134,77 @@ var inputBox = (function () {
 })();
 
 config = {
-    data: [
-        {name: 'tabriz', selected: false},
-        {name: 'istanbul', selected: false},
-        {name: 'Ankara', selected: false},
-        {name: 'London', selected: false},
-        {name: 'newYork', selected: false},
-        {name: 'Tehran', selected: false},
-        {name: 'Shanghai', selected: false},
-        {name: 'Mambai', selected: false},
-        {name: 'Adelaide', selected: false},
-        {name: 'Chicago', selected: false},
-        {name: 'Baku', selected: false},
-        {name: 'Karachi', selected: false}
-    ],
+    data: [],
     width: 4464,
-    itemsPerPage: 5,
+    itemsPerPage: 6,
     sortByName: true,
-    style: 'night'
+    style: 'night',
+    url: 'URL'
 };
 
 
-dummyDataObj = [
+config.data = [
 
     {
-        city: 'Tabriz',
+        name: 'Tabriz',
         selected: false
     },
     {
-        city: 'Istanbul',
+        name: 'Istanbul',
         selected: false
     },
     {
-        city: 'Karachi',
+        name: 'Karachi',
         selected: false
     },
     {
-        city: 'Shanghai',
+        name: 'Shanghai',
         selected: false
     },
     {
-        city: 'Mumbai',
+        name: 'Mumbai',
         selected: false
     },
     {
-        city: 'Newyork',
+        name: 'Newyork',
         selected: false
     },
     {
-        city: 'London',
+        name: 'London',
         selected: false
     },
     {
-        city: 'Adelaide',
+        name: 'Adelaide',
         selected: false
     },
     {
-        city: 'HongKong',
+        name: 'HongKong',
         selected: false
     },
     {
-        city: 'Chicago',
+        name: 'Chicago',
         selected: false
     },
     {
-        city: 'Baku',
+        name: 'Baku',
         selected: false
     },
     {
-        city: 'Cairo',
+        name: 'Cairo',
         selected: false
     },
     {
-        city: 'Baghdad',
+        name: 'Baghdad',
         selected: false
     },
     {
-        city: 'Nairobi',
+        name: 'Nairobi',
         selected: false
     },
     {
-        city: 'Mexico',
+        name: 'Mexico',
         selected: false
     }
 ];
-//inp = new inputBox([{city:'Config',selected:false},{city:'Test',selected:false}]);
 inp = new inputBox(config);
-//inp = new inputBox();
-
-m.mount(document.getElementById('inputBox'), inp);
+m.mount(document.body, inp);
