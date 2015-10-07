@@ -7,37 +7,37 @@ var inputBox = (function () {
      ********************************
      Usage:
      create an object with the configuration as followed
-     
+
      config = {
      data: [],           // The data goes here
      width: 4464,        // width
-     itemsPerPage: 6,    // Items to show in the list 
+     itemsPerPage: 6,    // Items to show in the list
      sortByName: true,   // sort alphabetically or not
-     style: 'night',     // you can provide a theme, the themes are set in the css file and set the classes according night  
+     style: 'night',     // you can provide a theme, the themes are set in the css file and set the classes according night
      url: 'URL'          // The URL for the AJAX request
      };
-     
-     If a URL is provided and also a data is set at the data part, the AJAX response overwrites the old data 
+
+     If a URL is provided and also a data is set at the data part, the AJAX response overwrites the old data
      */
 
     function InputBox(config) {
-        this.config = m.prop({});
-        this.config.data = m.prop([]);
-        this.config.width = m.prop(100);
-        this.config.itemsPerPage = m.prop(10);
-        this.config.sortByName = m.prop(false);
-        this.config.style = m.prop('none');
-        this.config.url = m.prop('');
+        this.config = m.prop({
+            data: [],
+            width: 100,
+            itemsPerPage: 10,
+            sortByName: false,
+            url: ''
+        });
+
         // the var for userInput value in the input box
         this.userInput = m.prop('');
         // the var for list shown in the view part
         this.list = m.prop([]);
         // if set to true data in the config exists
         //
-        this.completed = m.prop(false);
+
         this.inputCssClass = m.prop('');
         this.init(config);
-        this.stylize()
 
 
     }
@@ -45,55 +45,41 @@ var inputBox = (function () {
     InputBox.prototype.init = function (param) {
 
         for (var key in param) {
-            this.config[key](param[key])
+            this.config()[key] = param[key]
         }
-        if (this.config.url() != '') {
-            this.getData()
-        } else {
-            this.completed(true)
+        if (this.config.url) {
+            this.getAjaxData()
         }
-
         this.updateList()
     };
-    InputBox.prototype.stylize = function () {
 
-        switch (this.config["style"]()) {
-            case "night":
-                this.inputCssClass(".inputBoxNight");
-                break;
-
-        }
-
-    };
 
     InputBox.prototype.updateList = function () {
         this.list([]);
 
         var theList = this.list(),
-            theData = this.config.data();
+            config = this.config(),
+            theData = config.data;
 
-        if (theData.length) {
 
-            for (var i = 0; i < theData.length; i++) {
+        for (var i = 0; i < theData.length; i++) {
+            var dataElement = theData[i],
+                lowerCaseName = dataElement.name.toLowerCase(),
+                lowerInputBoxValue = this.userInput().toLowerCase(),
+                nameIdx = lowerCaseName.indexOf(lowerInputBoxValue);
 
-                var dataElement = theData[i],
-                    lowerCaseName = dataElement.name.toLowerCase(),
-                    lowerInputBoxValue = this.userInput().toLowerCase(),
-                    nameIdx = lowerCaseName.indexOf(lowerInputBoxValue);
-
-                if (nameIdx != -1 && theList.length < this.config.itemsPerPage()) {
-                    theList.push(theData[i].name);
-                }
-
+            if (nameIdx != -1 && theList.length < config.itemsPerPage) {
+                theList.push(dataElement);
             }
-            if (this.config.sortByName()) {
-                theList.sort();
-            }
+        }
+
+        if (theList.length && config.sortByName) {
+            theList.sort();
         }
     };
 
     //GET DATA Later Will be AJAX
-    InputBox.prototype.getData = function () {
+    InputBox.prototype.getAjaxData = function () {
         var IB = this,
             greetAsync = function () {
                 var deferred = m.deferred();
@@ -110,22 +96,23 @@ var inputBox = (function () {
             .then(function (response) {
                 m.startComputation();
                 IB.config.data(response);
-                IB.completed(true);
                 IB.updateList();
                 m.endComputation();
             })
     };
 
     InputBox.prototype.view = function () {
-        return [m('input' + this.inputCssClass(), {
+        return [m('input' ,
+            {
                 oninput: m.withAttr('value', this.userInput),
-                onchange: this.completed() ? this.updateList() : ""
+                onkeyup: this.updateList.bind(this),
+                class:'ChMithInputBoxClass'
             },
             this.userInput()),
             m('ul',
                 this.list().map(
-                    function (e) {
-                        return m('li', e)
+                    function (listItem) {
+                        return m('li', listItem.name)
                     }
                 )
             )]
@@ -136,10 +123,9 @@ var inputBox = (function () {
 config = {
     data: [],
     width: 4464,
-    itemsPerPage: 6,
+    itemsPerPage: 3,
     sortByName: true,
-    style: 'night',
-    url: 'URL'
+    url: ''
 };
 
 
