@@ -14,10 +14,15 @@ var inputBox = (function () {
      */
 
     function InputBox(config) {
-        this.config = {itemsPerPage: 10, sortByName: false, style: 'none'};
+        this.config = {};
+        this.config.data = m.prop([]);
+        this.config.width = m.prop(100);
+        this.config.itemsPerPage = m.prop(10);
+        this.config.sortByName = m.prop(false);
+        this.config.style = m.prop('none');
         this.current = m.prop('');
         this.list = m.prop([]);
-        this.data = m.prop([{}]);
+        //this.data = m.prop([{}]);
         this.completed = m.prop(false);
         this.inputCssClass = m.prop('');
         this.init(config);
@@ -27,25 +32,22 @@ var inputBox = (function () {
     }
 
     InputBox.prototype.init = function (param) {
-        console.log('this in init function:', this);
-        if (param['dataSet']) {
-            this.data(param['dataSet']);
-            this.completed(true);
+
+        for (var key in param) {
+            //   console.log('key::',key,'*** this.config[key]::',this.config[key](),'*** param[key]::',param[key]);
+            this.config[key](param[key])
         }
-        if (param['itemsPerPage']) {
-            this.config['itemsPerPage'] = param['itemsPerPage']
+        if (typeof(this.config['data'])=='string'){
+            this.getData()
+        }else{
+            this.completed(true)
         }
-        if (param['sortByName']) {
-            this.config['sortByName'] = param['sortByName']
-        }
-        if (param['style']) {
-            this.config['style'] = param['style']
-        }
+       // console.warn(this.config)
 
         this.updateList()
     };
     InputBox.prototype.stylize = function () {
-        console.log('config', this.config);
+        // console.log('config', this.config);
         switch (this.config["style"]) {
             case "night":
                 console.info('Night Theme Selected');
@@ -58,32 +60,32 @@ var inputBox = (function () {
     InputBox.prototype.updateList = function () {
         this.list([]);
 
-        if (this.data()) {
-            for (var i = 0; i < this.data().length; i++) {
-                var lowerData = this.data()[i].name.toLowerCase();
+        if (this.config.data()) {
+            for (var i = 0; i < this.config.data().length; i++) {
+          //      console.info(this.config.data())
+                var lowerData = this.config.data()[i].name.toLowerCase();
                 var lowerCurrent = this.current().toLowerCase();
-                console.log('****', this.data()[i].name, i, lowerData, lowerCurrent);
+                   console.log('****', this.config.data()[i].name, i, lowerData, lowerCurrent);
                 var c = lowerData.indexOf(lowerCurrent);
-                //console.log("Compare : current", this.current(), "city", this.data[i].city, "returned:", c);
-                if (c != -1 && this.list().length < this.config['itemsPerPage']) {
-
-                    this.list().push(this.data()[i].name);
-                    console.log('C!=1 and so at [i]teration: ', i, ' data[' + i + '].city:', this.data()[i].name, 'Length of List', this.list().length);
+                console.log("Compare : current", this.current(), "city", this.config.data()[i].name, "returned:", c,"items Per Page::",this.config.itemsPerPage());
+                if (c != -1 && this.list().length<=this.config.itemsPerPage()) {
+                    this.list().push(this.config.data()[i].name);
+                        console.log('C!=1 and so at [i]teration: ', i, ' data[' + i + '].city:', this.config.data()[i].name, 'Length of List', this.list().length);
 
                 }
-                console.log(this.config);
+                //   console.log(this.config);
                 if (this.config['sortByName'] == true) {
                     this.list().sort();
                 }
 
             }
-            console.log('The List is:', this.list());
+              console.log('The List is:', this.list());
             m.redraw()
         }
     };
     //GET DATA Later Will be AJAX
     InputBox.prototype.getData = function (url) {
-        console.log("--------------------URL has been set--------------------", url);
+       // console.log("--------------------URL has been set--------------------", url);
         var _this = this;
 
         var greetAsync = function () {
@@ -96,9 +98,9 @@ var inputBox = (function () {
 
         greetAsync()
             .then(function (response) {
-                _this.data(response);
+                _this.config.data(response);
                 _this.completed(true);
-                console.log('AJAX Response::', response, 'completed::', _this.completed());
+             //   console.log('AJAX Response::', response, 'completed::', _this.completed());
                 m.redraw();
                 _this.updateList();
                 return _this
@@ -124,15 +126,21 @@ var inputBox = (function () {
 })();
 
 config = {
-    dataSet: [
+    data: [
         {name: 'tabriz', selected: false},
         {name: 'istanbul', selected: false},
         {name: 'Ankara', selected: false},
         {name: 'London', selected: false},
         {name: 'newYork', selected: false},
-        {name: 'Tehran', selected: false}],
+        {name: 'Tehran', selected: false},
+        {name: 'Shanghai', selected: false},
+        {name: 'Mambai', selected: false},
+        {name: 'Adelaide', selected: false},
+        {name: 'Chicago', selected: false},
+        {name: 'Baku', selected: false},
+        {name: 'Karachi', selected: false}
+    ],
     width: 4464,
-    height: 2367238,
     itemsPerPage: 5,
     sortByName: true,
     style: 'night'
@@ -206,4 +214,4 @@ dummyDataObj = [
 inp = new inputBox(config);
 //inp = new inputBox();
 
-m.mount(document.body, inp);
+m.mount(document.getElementById('inputBox'), inp);
