@@ -1,4 +1,4 @@
-var inputBox = (function () {
+var inputBox = (function() {
     /*
      inputbox chooser with Mithril
      ********************************
@@ -27,136 +27,121 @@ var inputBox = (function () {
 
         // the var for userInput value in the input box
         this.userInput = m.prop('');
-        // the var for list shown in the view part
-        // this.list = m.prop([]);
-        this.init()
-        
-
-
+        this.selected = '';
+        this.init();
     }
 
-    InputBox.prototype.init = function (param) {
-
-        // for (var key in param) {
-        //     this.config()[key] = param[key]
-        // }
-	this.list=this.config.list;
-        this.updateList();
+    InputBox.prototype.init = function(param) {
+        this.updateList(this.config.list);
     };
 
 
-    InputBox.prototype.updateList = function (newList) {
-        //this.list([]);
-        
+    InputBox.prototype.updateList = function(newList) {
+
+        this.list = newList;
+        this.config.list = newList;
         var perPage = this.config.itemsPerPage;
         var sort = this.config.sortByName;
-        this.list=newList;    
-	
+
     };
 
-    InputBox.prototype.find=function(){
-	
-	var self=this;
-	var foundItems=[];
-	this.config.list.map(function(item){
-	    
-	    var lowerItem = item.name.toLowerCase();
-	
-	    if(lowerItem.indexOf(self.userInput())>-1){
-		foundItems.push(item);
-	    } 	    
-	});
-	this.updateList(foundItems)
+    InputBox.prototype.find = function() {
+
+        var self = this;
+        var foundItems = [];
+        this.config.list.map(function(item) {
+            var lowerItem = item.toLowerCase();
+
+            if (lowerItem.indexOf(self.userInput()) > -1) {
+                foundItems.push(item);
+            }
+        });
+        this.updateList(foundItems);
     };
-    InputBox.prototype.view = function () {
-        return [m('input' ,
-            {
-                oninput: m.withAttr('value', this.userInput),
-                onkeyup: this.find()
-                
-            },
-            this.userInput()),
-            m('ul',
+
+    InputBox.prototype.getSelected = function() {
+        return this.selected;
+
+    };
+
+    InputBox.prototype.view = function() {
+        var self = this;
+        return m('.mithChosen', m('input', {
+                    oninput: m.withAttr('value', this.userInput),
+                    onkeyup: this.find()
+
+                },
+                this.userInput()),
+            m('ol', {
+
+                },
                 this.list.map(
-                    function (listItem) {
-                        return m('li', listItem.name)
-                    }
-                )
-            )]
+                    function(listItem, i) {
+                        if (i >= self.config.itemsPerPage)
+                            return '';
+                        else
+                            return m('ul', {
+                                onclick: function(e) {
+                                    self.selected = e.target.innerText;
+
+                                },
+                                onmouseover: function(e) {
+                                    var background = self.config.styles.selectedBackground;
+                                    var foreground = self.config.styles.selectedForeground;
+
+                                    e.target.style.background = background;
+                                    e.target.style.color = foreground;
+
+                                },
+                                onmouseout: function(e) {
+                                    var background = self.config.styles.background;
+                                    var foreground = self.config.styles.foreground;
+
+                                    e.target.style.background = background;
+                                    e.target.style.color = foreground;
+                                }
+                            }, listItem);
+                    }))
+        );
     };
+
     return InputBox;
 })();
 
-config = {
+var config = {
     list: [],
     width: 4464,
-    itemsPerPage: 8,
-    sortByName: true
+    itemsPerPage: 10,
+    sortByName: true,
+    styles: {
+        selectedBackground: 'black',
+        selectedForeground: 'white',
+        background: 'white',
+        foreground: 'black',
+    }
 };
 
 
-config.list = [
+config.list = ['Tabriz', 'Istanbul','Karachi','Shanghai','Mumbai','Newyork','London','Adelaide','HongKong','Chicago','Baku','Cairo','Baghdad','Nairobi','Mexico'];
 
-    {
-        name: 'Tabriz',
-        selected: false
-    },
-    {
-        name: 'Istanbul',
-        selected: false
-    },
-    {
-        name: 'Karachi',
-        selected: false
-    },
-    {
-        name: 'Shanghai',
-        selected: false
-    },
-    {
-        name: 'Mumbai',
-        selected: false
-    },
-    {
-        name: 'Newyork',
-        selected: false
-    },
-    {
-        name: 'London',
-        selected: false
-    },
-    {
-        name: 'Adelaide',
-        selected: false
-    },
-    {
-        name: 'HongKong',
-        selected: false
-    },
-    {
-        name: 'Chicago',
-        selected: false
-    },
-    {
-        name: 'Baku',
-        selected: false
-    },
-    {
-        name: 'Cairo',
-        selected: false
-    },
-    {
-        name: 'Baghdad',
-        selected: false
-    },
-    {
-        name: 'Nairobi',
-        selected: false
-    },
-    {
-        name: 'Mexico',
-        selected: false
-    }
-];
 var inp = new inputBox(config);
-m.mount(document.body, inp);
+
+var main = {
+    view: function() {
+        return [
+            m('button', {
+                onclick: function() {
+                    alert(inp.getSelected());
+                }
+            }, 'selected'),
+            m('button', {
+                onclick: function() {
+                    inp.updateList(['banana', 'apple', 'kiwi', 'orange']);
+                }
+            }, 'newList'),
+            m.component(inp)
+        ]
+    }
+};
+
+m.mount(document.body, main);
