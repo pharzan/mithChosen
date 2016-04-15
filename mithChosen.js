@@ -11,14 +11,8 @@ var inputBox = (function() {
 
         this.userInput = m.prop('');
         this.selected = '';
-        this.init();
-	var a='hi';
-	
+        this.init();	
     }
-    function _updateList(newList) {
-	
-        self.list = newList;
-	};
 
     InputBox.prototype.init = function(param) {
         this.updateList(this.config.list);
@@ -118,7 +112,10 @@ var config = {
 };
 
 
-config.list = ['Tabriz', 'Istanbul','Karachi','Shanghai','Mumbai','Newyork','London','Adelaide','HongKong','Chicago','Baku','Cairo','Baghdad','Nairobi','Mexico'];
+config.list = ['Tabriz', 'Istanbul','Karachi','Shanghai',
+	       'Mumbai','Newyork','London','Adelaide',
+	       'HongKong','Chicago','Baku','Cairo',
+	       'Baghdad','Nairobi','Mexico'];
 
 var inp = new inputBox(config);
 
