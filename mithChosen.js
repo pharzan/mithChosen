@@ -18,6 +18,7 @@ var inputBox = (function() {
      */
 
     function InputBox(config) {
+	
         this.config = config || {
             list: [],
             width: 100,
@@ -29,20 +30,36 @@ var inputBox = (function() {
         this.userInput = m.prop('');
         this.selected = '';
         this.init();
+	var a='hi';
+	
     }
+    function _updateList(newList) {
+	
+        self.list = newList;
+        //list = newList;
+        
+
+	};
 
     InputBox.prototype.init = function(param) {
         this.updateList(this.config.list);
     };
+    InputBox.prototype.updateList = function(foundItems) {
+	
+        this.list = foundItems;
+        var perPage = this.config.itemsPerPage;
+        var sort = this.config.sortByName;
 
-
-    InputBox.prototype.updateList = function(newList) {
-
+	
+    };
+    InputBox.prototype.update = function(newList) {
+	
         this.list = newList;
         this.config.list = newList;
         var perPage = this.config.itemsPerPage;
         var sort = this.config.sortByName;
 
+	
     };
 
     InputBox.prototype.find = function() {
@@ -56,6 +73,8 @@ var inputBox = (function() {
                 foundItems.push(item);
             }
         });
+	
+	
         this.updateList(foundItems);
     };
 
@@ -117,7 +136,7 @@ var config = {
         selectedBackground: 'black',
         selectedForeground: 'white',
         background: 'white',
-        foreground: 'black',
+        foreground: 'black'
     }
 };
 
@@ -136,11 +155,23 @@ var main = {
             }, 'selected'),
             m('button', {
                 onclick: function() {
-                    inp.updateList(['banana', 'apple', 'kiwi', 'orange']);
+		    
+                    inp.update(['banana', 'apple', 'kiwi', 'orange']);
+	
                 }
             }, 'newList'),
+            m('button', {
+                onclick: function() {
+	
+                    inp.update(['Tabriz', 'Istanbul','Karachi',
+				    'Shanghai','Mumbai','Newyork',
+				    'London','Adelaide','HongKong',
+				    'Chicago','Baku','Cairo',
+				    'Baghdad','Nairobi','Mexico']);
+                }
+            }, 'oldList'),
             m.component(inp)
-        ]
+        ];
     }
 };
 
