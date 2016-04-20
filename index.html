@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Mithchosen by pharzan</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Mithchosen</h1>
+        <p>A simple select list with search implemented for mithril.js</p>
+
+        <p class="view"><a href="https://github.com/pharzan/mithChosen">View the Project on GitHub <small>pharzan/mithChosen</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/pharzan/mithChosen/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/pharzan/mithChosen/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/pharzan/mithChosen">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="mithchosen" class="anchor" href="#mithchosen" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>mithChosen</h1>
+
+<p>This code is a simple implementation of a list chooser with a search and sort capability. Intended to be used as a component for <a href="http://mithril.js.org">mithril js</a>. It includes methods to update the list on the fly and also set style in the config file.
+Made for mithril it intends to give a similar functionality to of the <a href="https://harvesthq.github.io/chosen/">chosen</a> plugin made for jquery.</p>
+
+<p>For an example visit the jsFiddle link below or use the example provided in the repository.
+to use the component simple add the code in the lib to your js file either by require or using it directly and add it as a component in the main view of the mounted object. see below for more info</p>
+
+<p><a href="https://jsfiddle.net/pharzan/hr7vcujL/">Live od jsFiddle</a></p>
+
+<p><em>Usage:</em></p>
+
+<p>Create an instance with a config:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> config <span class="pl-k">=</span> {
+    list<span class="pl-k">:</span> [], <span class="pl-c">//the list</span>
+
+    itemsPerPage<span class="pl-k">:</span> <span class="pl-c1">10</span>, <span class="pl-c">//number of items shown in the list</span>
+    sortByName<span class="pl-k">:</span> <span class="pl-c1">true</span>, <span class="pl-c">//sort</span>
+    styles<span class="pl-k">:</span> { 
+        width<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>200px<span class="pl-pds">"</span></span>, <span class="pl-c">//width of the list</span>
+        selectedBackground<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>black<span class="pl-pds">'</span></span>, 
+        selectedForeground<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>white<span class="pl-pds">'</span></span>,
+        background<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>white<span class="pl-pds">'</span></span>,
+        foreground<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>black<span class="pl-pds">'</span></span>
+    }
+};
+
+<span class="pl-k">var</span> chosen <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">MithChosen</span>(config);
+<span class="pl-c">// The list may be updated at any time using the update() method.</span>
+
+<span class="pl-smi">chosen</span>.<span class="pl-en">update</span>([<span class="pl-s"><span class="pl-pds">'</span>Tabriz<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Istanbul<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>Karachi<span class="pl-pds">'</span></span>,
+                    <span class="pl-s"><span class="pl-pds">'</span>Shanghai<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>Mumbai<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>Newyork<span class="pl-pds">'</span></span>,
+                    <span class="pl-s"><span class="pl-pds">'</span>London<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>Adelaide<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>HongKong<span class="pl-pds">'</span></span>,
+                    <span class="pl-s"><span class="pl-pds">'</span>Chicago<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>Baku<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>Cairo<span class="pl-pds">'</span></span>,
+                    <span class="pl-s"><span class="pl-pds">'</span>Baghdad<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>Nairobi<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>Mexico<span class="pl-pds">'</span></span>]);
+
+<span class="pl-c">// or it can be provided when instantiating.</span>
+</pre></div>
+
+<p>Add the component to your main view using mithrils m.component utilty and mount that object to the DOM.</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> main <span class="pl-k">=</span> {
+    <span class="pl-en">view</span><span class="pl-k">:</span> <span class="pl-k">function</span>(){
+        <span class="pl-k">return</span> <span class="pl-smi">m</span>.<span class="pl-en">component</span>(chosen)
+    }
+}
+<span class="pl-smi">m</span>.<span class="pl-en">mount</span>(<span class="pl-c1">document</span>.<span class="pl-c1">body</span>,main);</pre></div>
+
+<h3>
+<a id="stuff-used-to-make-this" class="anchor" href="#stuff-used-to-make-this" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Stuff used to make this:</h3>
+
+<ul>
+<li>
+<a href="http://mithril.js.org">mithril js</a> Framework</li>
+<li>
+<a href="https://harvesthq.github.io/chosen/">chosen</a> plugin for jquery</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/pharzan">pharzan</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
