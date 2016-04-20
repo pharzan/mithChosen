@@ -4,12 +4,13 @@ Made for mithril it intends to give a similar functionality to of the [chosen](h
 
 For an example visit the jsFiddle link below or use the example provided in the repository.
 to use the component simple add the code in the lib to your js file either by require or using it directly and add it as a component in the main view of the mounted object. see below for more info
+
 [Live od jsFiddle](https://jsfiddle.net/pharzan/hr7vcujL/)
 
 *Usage:*
 
 Create an instance with a config:
-```
+```JS
 var config = {
     list: [], //the list
    
