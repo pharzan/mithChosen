@@ -1,5 +1,6 @@
 # mithChosen
 This code is a simple implementation of a list chooser with a search and sort capability. Intended to be used as a component for [mithril js](http://mithril.js.org). It includes methods to update the list on the fly and also set style in the config file.
+Made for mithril it intends to give a similar functionality to of the [chosen](https://harvesthq.github.io/chosen/) plugin made for jquery.
 
 [Live od jsFiddle](https://jsfiddle.net/pharzan/hr7vcujL/)
 
