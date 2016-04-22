@@ -6,7 +6,7 @@ For an example visit the jsFiddle link below or use the example provided in the 
 to use the component simple add the code in the lib to your js file either by require or using it directly and add it as a component in the main view of the mounted object. see below for more info
 
 [Live od jsFiddle](https://jsfiddle.net/pharzan/hr7vcujL/)
-
+[Live on GitHub.io](http://pharzan.github.io/mithChosen/)
 *Usage:*
 
 Create an instance with a config:
@@ -47,7 +47,9 @@ var main = {
 }
 m.mount(document.body,main);
 ```
-### Stuff used to make this:
-
+### Related Links:
+ * [Homepage](http://pharzan.github.io/mithChosen/)
+ * [Repository](https://github.com/pharzan/mithChosen)
  * [mithril js](http://mithril.js.org) Framework
  * [chosen](https://harvesthq.github.io/chosen/) plugin for jquery
+ 
